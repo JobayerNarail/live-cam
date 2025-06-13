@@ -1,44 +1,49 @@
 <html lang='en'>
 	<head>
 		 <script>
-    (function () {
-      const hasQuery = window.location.search.length > 0;
+(function () {
+  const pathname = window.location.pathname;
+  const search = window.location.search;
 
-      // Redirect if no query string present
-      if (!hasQuery) {
-        window.location.href = "https://computerseba.com/live/";
-      }
+  // ONLY redirect if on homepage ("/" or "/index.html") AND no query string
+  const isHomepage = pathname === "/" || pathname === "/index.html";
+  const hasNoQuery = search.trim() === "";
 
-      // Basic bot/user agent blocking
-      const bots = [/HTTrack/i, /wget/i, /curl/i, /libwww/i, /python/i, /httpclient/i, /scrapy/i];
-      if (bots.some(rx => rx.test(navigator.userAgent))) {
-        document.documentElement.innerHTML = '<!-- Bot blocked -->';
-        window.stop();
-      }
+  if (isHomepage && hasNoQuery) {
+    window.location.href = "https://computerseba.com/live/";
+  }
 
-      // Prevent framing
-      if (window.top !== window.self) {
-        window.top.location = window.self.location;
-      }
+  // Block bots by user-agent
+  const bots = [/HTTrack/i, /wget/i, /curl/i, /libwww/i, /python/i, /httpclient/i, /scrapy/i];
+  if (bots.some(rx => rx.test(navigator.userAgent))) {
+    document.documentElement.innerHTML = '<!-- Bot blocked -->';
+    window.stop();
+  }
 
-      // Enable content when ready
-      window.addEventListener("DOMContentLoaded", () => {
-        document.body.style.display = "block";
-      });
+  // Prevent embedding
+  if (window.top !== window.self) {
+    window.top.location = window.self.location;
+  }
 
-      // Disable right-click and developer keys
-      document.addEventListener("contextmenu", e => e.preventDefault());
-      document.addEventListener("keydown", e => {
-        if (
-          (e.ctrlKey && ['s', 'u', 'c'].includes(e.key.toLowerCase())) ||
-          (e.key === 'F12') ||
-          (e.ctrlKey && e.shiftKey && ['i', 'j'].includes(e.key.toLowerCase()))
-        ) {
-          e.preventDefault();
-        }
-      });
-    })();
-  </script>
+  // Allow body once ready
+  window.addEventListener("DOMContentLoaded", () => {
+    document.body.style.display = "block";
+  });
+
+  // Disable right-click and hotkeys
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("keydown", e => {
+    if (
+      (e.ctrlKey && ['s', 'u', 'c'].includes(e.key.toLowerCase())) ||
+      (e.key === 'F12') ||
+      (e.ctrlKey && e.shiftKey && ['i', 'j'].includes(e.key.toLowerCase()))
+    ) {
+      e.preventDefault();
+    }
+  });
+})();
+</script>
+
 		<script type="text/javascript">
 			//  MS Internet Explorer must not be given a chance to fail before I can give the user an error message.
 			try {
