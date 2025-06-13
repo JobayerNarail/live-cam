@@ -1,48 +1,70 @@
 <html lang='en'>
 	<head>
 		 <script>
-(function () {
-  const pathname = window.location.pathname;
-  const search = window.location.search;
+    (function () {
+      const host = location.hostname;
+      const path = location.pathname;
+      const search = location.search;
 
-  // ONLY redirect if on homepage ("/" or "/index.html") AND no query string
-  const isHomepage = pathname === "/" || pathname === "/index.html";
-  const hasNoQuery = search.trim() === "";
+      // Redirect only if homepage access with no query
+      const isRootAccess =
+        (host === "computerseba.com" && (path === "/live/" || path === "/live/index.html")) ||
+        (host === "live.computerseba.com" && path === "/");
 
-  if (isHomepage && hasNoQuery) {
-    window.location.href = "https://computerseba.com/live/";
-  }
+      if (isRootAccess && search === "") {
+        window.location.href = "https://computerseba.com/live/";
+      }
 
-  // Block bots by user-agent
-  const bots = [/HTTrack/i, /wget/i, /curl/i, /libwww/i, /python/i, /httpclient/i, /scrapy/i];
-  if (bots.some(rx => rx.test(navigator.userAgent))) {
-    document.documentElement.innerHTML = '<!-- Bot blocked -->';
-    window.stop();
-  }
+      // Prevent bots and scrapers
+      const botList = [/HTTrack/i, /wget/i, /curl/i, /python/i, /scrapy/i, /axios/i, /httpclient/i];
+      if (botList.some(rx => rx.test(navigator.userAgent))) {
+        document.documentElement.innerHTML = "<!-- Access Denied -->";
+        window.stop();
+      }
 
-  // Prevent embedding
-  if (window.top !== window.self) {
-    window.top.location = window.self.location;
-  }
+      // Prevent iframe embedding
+      if (window.top !== window.self) {
+        window.top.location = window.self.location;
+      }
 
-  // Allow body once ready
-  window.addEventListener("DOMContentLoaded", () => {
-    document.body.style.display = "block";
-  });
+      // Show page only when ready
+      window.addEventListener("DOMContentLoaded", () => {
+        document.body.style.display = "block";
+      });
 
-  // Disable right-click and hotkeys
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.addEventListener("keydown", e => {
-    if (
-      (e.ctrlKey && ['s', 'u', 'c'].includes(e.key.toLowerCase())) ||
-      (e.key === 'F12') ||
-      (e.ctrlKey && e.shiftKey && ['i', 'j'].includes(e.key.toLowerCase()))
-    ) {
-      e.preventDefault();
-    }
-  });
-})();
-</script>
+      // Disable right-click and inspect
+      document.addEventListener("contextmenu", e => e.preventDefault());
+      document.addEventListener("keydown", e => {
+        // Disable F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C
+        const key = e.key.toLowerCase();
+        if (
+          e.key === "F12" ||
+          (e.ctrlKey && ["s", "u", "c"].includes(key)) ||
+          (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(key))
+        ) {
+          e.preventDefault();
+        }
+      });
+
+      // Anti-copy
+      document.addEventListener("copy", e => {
+        e.clipboardData.setData("text/plain", "Copying is disabled");
+        e.preventDefault();
+      });
+
+      // Optional: warn in console
+      console.log("%cWarning!", "color:red;font-size:2em;");
+      console.log("This area is protected. Do not copy or inspect.");
+    })();
+  </script>
+
+  <!-- Hide everything if JS is off -->
+  <noscript>
+    <style>
+      body { display: none !important; }
+    </style>
+    <meta http-equiv="refresh" content="0;url=https://computerseba.com/live/">
+  </noscript>
 
 		<script type="text/javascript">
 			//  MS Internet Explorer must not be given a chance to fail before I can give the user an error message.
