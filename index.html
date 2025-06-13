@@ -1,41 +1,29 @@
 <html lang='en'>
 	<head>
-		 <script>
+		  <script>
     (function () {
-      const host = location.hostname;
-      const path = location.pathname;
-      const search = location.search;
-
-      // Redirect only if homepage access with no query
-      const isRootAccess =
-        (host === "computerseba.com" && (path === "/live/" || path === "/live/index.html")) ||
-        (host === "live.computerseba.com" && path === "/");
-
-      if (isRootAccess && search === "") {
-        window.location.href = "https://computerseba.com/live/";
-      }
-
-      // Prevent bots and scrapers
-      const botList = [/HTTrack/i, /wget/i, /curl/i, /python/i, /scrapy/i, /axios/i, /httpclient/i];
-      if (botList.some(rx => rx.test(navigator.userAgent))) {
-        document.documentElement.innerHTML = "<!-- Access Denied -->";
-        window.stop();
-      }
-
-      // Prevent iframe embedding
-      if (window.top !== window.self) {
-        window.top.location = window.self.location;
-      }
-
-      // Show page only when ready
+      // 1. Show content only after JS confirms
       window.addEventListener("DOMContentLoaded", () => {
         document.body.style.display = "block";
       });
 
-      // Disable right-click and inspect
+      // 2. Block bots/crawlers by User-Agent
+      const bots = [/HTTrack/i, /wget/i, /curl/i, /python/i, /axios/i, /scrapy/i, /httpclient/i];
+      if (bots.some(rx => rx.test(navigator.userAgent))) {
+        document.documentElement.innerHTML = "<!-- Access Denied -->";
+        window.stop();
+      }
+
+      // 3. Prevent iframe embedding
+      if (window.top !== window.self) {
+        window.top.location = window.self.location;
+      }
+
+      // 4. Disable right-click
       document.addEventListener("contextmenu", e => e.preventDefault());
+
+      // 5. Disable key combos: F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C
       document.addEventListener("keydown", e => {
-        // Disable F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C
         const key = e.key.toLowerCase();
         if (
           e.key === "F12" ||
@@ -46,24 +34,21 @@
         }
       });
 
-      // Anti-copy
+      // 6. Disable copy to clipboard
       document.addEventListener("copy", e => {
-        e.clipboardData.setData("text/plain", "Copying is disabled");
+        e.clipboardData.setData("text/plain", "Copying is disabled.");
         e.preventDefault();
       });
 
-      // Optional: warn in console
-      console.log("%cWarning!", "color:red;font-size:2em;");
-      console.log("This area is protected. Do not copy or inspect.");
+      // 7. Warn in console
+      console.log("%cStop!", "color: red; font-size: 30px;");
+      console.log("This area is protected. Inspecting is blocked.");
     })();
   </script>
 
-  <!-- Hide everything if JS is off -->
+  <!-- 8. Hide all content if JavaScript is off -->
   <noscript>
-    <style>
-      body { display: none !important; }
-    </style>
-    <meta http-equiv="refresh" content="0;url=https://computerseba.com/live/">
+    <style>body { display: none !important; }</style>
   </noscript>
 
 		<script type="text/javascript">
