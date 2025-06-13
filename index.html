@@ -1,50 +1,42 @@
 <html lang='en'>
 	<head>
 		 <script>
-    // 1. Block access if not ?view=true
     (function () {
-      const params = new URLSearchParams(window.location.search);
-      if (!(params.get("view") === "true")) {
+      const hasQuery = window.location.search.length > 0;
+
+      // Redirect if no query string present
+      if (!hasQuery) {
         window.location.href = "https://computerseba.com/live/";
       }
-    })();
 
-    // 2. Show content only if JS is enabled and access is valid
-    window.addEventListener("DOMContentLoaded", function () {
-      document.body.style.display = "block";
-    });
-
-    // 3. Prevent right-click and dev tools
-    document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("keydown", function (e) {
-      if (
-        (e.ctrlKey && ['s', 'u', 'c'].includes(e.key.toLowerCase())) ||
-        (e.key === 'F12') ||
-        (e.ctrlKey && e.shiftKey && ['i', 'j'].includes(e.key.toLowerCase()))
-      ) {
-        e.preventDefault();
+      // Basic bot/user agent blocking
+      const bots = [/HTTrack/i, /wget/i, /curl/i, /libwww/i, /python/i, /httpclient/i, /scrapy/i];
+      if (bots.some(rx => rx.test(navigator.userAgent))) {
+        document.documentElement.innerHTML = '<!-- Bot blocked -->';
+        window.stop();
       }
-    });
 
-    // 4. Prevent iframe embedding
-    if (window.top !== window.self) {
-      window.top.location = window.self.location;
-    }
+      // Prevent framing
+      if (window.top !== window.self) {
+        window.top.location = window.self.location;
+      }
 
-    // 5. Block known scraping user agents (basic method)
-    const botPatterns = [
-      /HTTrack/i, /wget/i, /curl/i, /python-requests/i,
-      /libwww/i, /httpclient/i, /scrapy/i
-    ];
-    if (botPatterns.some(r => r.test(navigator.userAgent))) {
-      document.write('<!-- Access Blocked -->');
-      window.stop();
-    }
+      // Enable content when ready
+      window.addEventListener("DOMContentLoaded", () => {
+        document.body.style.display = "block";
+      });
 
-    // 6. Optional: Obfuscated console log
-    (function(){
-      const msg = atob("U2VjdXJlIHZpZXcgb25seSwgc3RvcCBjb3B5aW5nLg==");
-      console.log(msg);
+      // Disable right-click and developer keys
+      document.addEventListener("contextmenu", e => e.preventDefault());
+      document.addEventListener("keydown", e => {
+        if (
+          (e.ctrlKey && ['s', 'u', 'c'].includes(e.key.toLowerCase())) ||
+          (e.key === 'F12') ||
+          (e.ctrlKey && e.shiftKey && ['i', 'j'].includes(e.key.toLowerCase()))
+        ) {
+          e.preventDefault();
+        }
+      });
     })();
   </script>
 		<script type="text/javascript">
